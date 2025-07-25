@@ -11,11 +11,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import useSignUp from "@/hooks/auth/useSignUp";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeftIcon, EyeIcon, EyeOffIcon } from "lucide-react";
+import { ArrowLeftIcon, EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z
@@ -36,6 +38,8 @@ const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const { isLoading, signUp } = useSignUp();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,10 +50,17 @@ const SignUpPage = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: SignUpFormValues) {
+    const response = await signUp({
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    });
+
+    console.log(response);
+
+    form.reset();
+    toast.success("Account created successfully");
   }
 
   return (
@@ -163,7 +174,11 @@ const SignUpPage = () => {
                 type="submit"
                 className="w-full bg-brand-600 hover:bg-brand-700 text-white"
               >
-                Submit
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </form>
           </Form>
