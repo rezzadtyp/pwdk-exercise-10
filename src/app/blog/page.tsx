@@ -54,22 +54,24 @@ const BlogPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {blogs.map((blog) => (
-              <Card key={blog.objectId}>
-                <CardHeader>
-                  <div className="w-full h-40">
-                    <Image
-                      src={blog.imageUrl}
-                      alt={blog.title}
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-                  <CardTitle>{blog.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>{blog.description}</p>
-                </CardContent>
-              </Card>
+              <Link href={`/blog/${blog.objectId}`} key={blog.objectId}>
+                <Card key={blog.objectId}>
+                  <CardHeader>
+                    <div className="w-full h-40">
+                      <Image
+                        src={blog.imageUrl}
+                        alt={blog.title}
+                        width={100}
+                        height={100}
+                      />
+                    </div>
+                    <CardTitle>{blog.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>{blog.description}</p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
