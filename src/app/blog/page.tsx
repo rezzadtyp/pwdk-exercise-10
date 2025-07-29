@@ -3,26 +3,20 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import useGetBlogs from "@/hooks/blog/useGetBlogs";
 import { useAuthStore } from "@/store/auth-store";
 import { Blog } from "@/types/user.type";
 import { ArrowLeftIcon, PlusIcon } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import CreateBlogForm from "./components/CreateBlogForm";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const BlogPage = () => {
   const { user } = useAuthStore();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const { getBlogs, isLoading } = useGetBlogs();
+  const router = useRouter();
 
   useEffect(() => {
     useAuthStore.persist.rehydrate();
@@ -36,8 +30,6 @@ const BlogPage = () => {
 
     fetchBlogs();
   }, []);
-
-  console.log(blogs);
 
   return (
     <ProtectedRoute>
@@ -54,27 +46,24 @@ const BlogPage = () => {
           <div className="flex items-center justify-between w-full">
             <p>Hello {user?.name}</p>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>
-                  <PlusIcon className="w-4 h-4" />
-                  Create Blog
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader className="space-y-2">
-                  <DialogTitle>Create Blog</DialogTitle>
-
-                  <CreateBlogForm userId={user?.objectId || ""} />
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => router.push("/blog/create")}>
+              <PlusIcon className="w-4 h-4" />
+              Create Blog
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {blogs.map((blog) => (
               <Card key={blog.objectId}>
                 <CardHeader>
+                  <div className="w-full h-40">
+                    <Image
+                      src={blog.imageUrl}
+                      alt={blog.title}
+                      width={100}
+                      height={100}
+                    />
+                  </div>
                   <CardTitle>{blog.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -82,17 +71,6 @@ const BlogPage = () => {
                 </CardContent>
               </Card>
             ))}
-          </div>
-
-          <div>
-            <Image
-              src={
-                "https://images.unsplash.com/photo-1753262081045-ff9b365ef62a?q=80&w=760&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              }
-              alt="blog"
-              width={100}
-              height={100}
-            />
           </div>
         </div>
       </div>

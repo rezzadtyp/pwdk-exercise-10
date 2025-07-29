@@ -16,6 +16,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import {
+  CldUploadButton,
+  CloudinaryUploadWidgetInfo,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
+import { useState } from "react";
 
 const formSchema = z.object({
   title: z.string().min(2).max(50),
@@ -24,8 +30,12 @@ const formSchema = z.object({
 
 type CreateBlogFormValues = z.infer<typeof formSchema>;
 
+// "https://res.cloudinary.com/ddrmeqhbp/image/upload/v1753779497/duep7c5n441mbsk698mh.jpg"
+
 const CreateBlogForm = ({ userId }: { userId: string }) => {
   const { createBlog, isLoading } = useCreateBlog();
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
   const form = useForm<CreateBlogFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,19 +45,35 @@ const CreateBlogForm = ({ userId }: { userId: string }) => {
   });
 
   const onSubmit = (data: CreateBlogFormValues) => {
-    createBlog({
-      title: data.title,
-      description: data.description,
-      userId,
-    });
+    if (imageUrl) {
+      createBlog({
+        title: data.title,
+        description: data.description,
+        userId,
+        imageUrl,
+      });
 
-    form.reset();
-    toast.success("Blog created successfully");
+      form.reset();
+      toast.success("Blog created successfully");
+    }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <CldUploadButton
+          className="z-50"
+          uploadPreset="exercise12"
+          onSuccessAction={(result: CloudinaryUploadWidgetResults) => {
+            console.log(result);
+            if (typeof result.info !== "string") {
+              setImageUrl(
+                "https://res.cloudinary.com/ddrmeqhbp/image/upload/" +
+                  result.info?.path
+              );
+            }
+          }}
+        />
         <FormField
           control={form.control}
           name="title"

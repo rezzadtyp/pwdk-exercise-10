@@ -13,4 +13,5 @@ export interface Blog {
   userId: string;
   created: string;
   updated: string;
+  imageUrl: string;
 }

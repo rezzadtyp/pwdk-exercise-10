@@ -5,6 +5,7 @@ interface ICreateBlogProps {
   title: string;
   description: string;
   userId: string;
+  imageUrl: string;
 }
 
 const useCreateBlog = () => {
